@@ -1,0 +1,5 @@
+-r base.txt
+
+pylint==2.15.0
+ipython==8.4.0
+ipdb==0.13.9

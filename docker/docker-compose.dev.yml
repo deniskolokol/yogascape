@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13.0-alpine
+    container_name: yogascape_postgres
+    labels:
+      tag: "v13.0"
+      description: "Yogascape: PostgreSQL server"
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data_pg:/var/lib/postgresql/data/
+    env_file:
+      - ./.dev.env
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.30
+
+  app:
+    build:
+      context: ../.
+      dockerfile: docker/app/Dockerfile
+    restart: unless-stopped
+    container_name: yogascape_app
+    command: /bin/sh -c "gunicorn --bind :8000 wsgi:application"
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    volumes:
+      - /data_app_media:/worker/media
+    env_file:
+      - ./.dev.env
+    depends_on:
+      - postgres
+
+volumes:
+  data_pg:
+    external: true
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16

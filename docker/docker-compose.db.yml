@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13.0-alpine
+    container_name: yogascape_postgres
+    labels:
+      tag: "v13.0"
+      description: "Yogascape: PostgreSQL server"
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data_pg:/var/lib/postgresql/data/
+    env_file:
+      - ./.dev.env
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.30
+
+volumes:
+  data_pg:
+    external: true
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16

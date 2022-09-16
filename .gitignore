@@ -103,6 +103,7 @@ celerybeat.pid
 
 # Environments
 .env
+*.env
 .venv
 env/
 venv/
@@ -125,5 +126,24 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# Don't track db.sqlite3
+db.sqlite3
+
 # Pyre type checker
 .pyre/
+
+# Emacs
+*.py~
+*.~
+*~
+*.#*
+
+# Docker volumes and data dirs
+docker/data*
+app/public/media/*
+
+# Certificates, keys, etc.
+*.rsa
+
+# OS X junk
+.DS_Store
