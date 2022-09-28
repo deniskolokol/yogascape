@@ -15,6 +15,13 @@ def admin_method_attrs(**outer_kwargs):
     return method_decorator
 
 
+def pict_or_name(obj):
+    try:
+        return obj.content_object.pict_100x100
+    except AttributeError:
+        return obj
+
+
 class ScoreAdmin(admin.ModelAdmin):
     list_display = ("name", "minval", "maxval", "user", "privacy", )
     list_filter = ("user", "privacy", )
@@ -28,10 +35,7 @@ class ScoredItemAdmin(admin.ModelAdmin):
 
     @admin_method_attrs(short_description='object')
     def _content_object(self, obj):
-        try:
-            return obj.content_object.pict_100x100
-        except AttributeError:
-            return obj
+        return pict_or_name(obj)
 
 
 class TaggedUserItemAdmin(admin.ModelAdmin):
@@ -41,10 +45,7 @@ class TaggedUserItemAdmin(admin.ModelAdmin):
 
     @admin_method_attrs(short_description='object')
     def _content_object(self, obj):
-        try:
-            return obj.content_object.pict_100x100
-        except AttributeError:
-            return obj
+        return pict_or_name(obj)
 
 
 admin.site.register(TaggedUserItem, TaggedUserItemAdmin)

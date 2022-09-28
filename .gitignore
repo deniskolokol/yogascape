@@ -136,6 +136,7 @@ db.sqlite3
 *.py~
 *.~
 *~
+*.#
 *.#*
 
 # Docker volumes and data dirs
