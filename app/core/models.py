@@ -15,6 +15,28 @@ PRIVACY = (
     ('public', 'Public'),
     )
 
+# All possible marks.
+MARKS = (
+    # Asanas:
+    ('lr', 'L,R'),
+    ('x2', 'X 2'),
+    ('x4', 'X 4'),
+    ('dyn', 'dynamic'),
+    ('breath_1', '<1>'),
+    ('breath_2', '<2>'),
+    ('breath_3', '<3>'),
+    ('breath_4', '<4>'),
+    ('breath_5', '<5>'),
+    ('breath_6', '<6>'),
+    ('breath_7', '<7>'),
+    ('breath_8', '<8>'),
+    ('breath_9', '<9>'),
+    ('breath_12', '<12>'),
+    ('breath_18', '<18>'),
+    ('breath_27', '<27>'),
+    )
+
+
 
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
@@ -22,7 +44,7 @@ def get_sentinel_user():
 
 def user_directory_path(instance, filename):
     """File will be uploaded to MEDIA_ROOT/user_<id>/<filename>"""
-    return 'user_{0}/{1}'.format(instance.user.id, filename)
+    return f'user_{instance.user.id}/{filename}'
 
 
 class DictDocumentMixin(object):
@@ -40,10 +62,10 @@ class NamedModel(models.Model, DictDocumentMixin):
     """
     Abstract class for all vocabulary-like models.
     """
-    name = models.CharField(max_length=255, db_index=True, help_text=_(u'Name'))
-    note = models.TextField(null=True, blank=True, help_text=_(u'Note'))
-    created = models.DateTimeField(auto_now_add=True, help_text=_(u'Created'))
-    updated = models.DateTimeField(auto_now=True, help_text=_(u'Last updated'))
+    name = models.CharField(max_length=255, db_index=True, help_text=_('Name'))
+    note = models.TextField(null=True, blank=True, help_text=_('Note'))
+    created = models.DateTimeField(auto_now_add=True, help_text=_('Created'))
+    updated = models.DateTimeField(auto_now=True, help_text=_('Last updated'))
 
     class Meta:
         abstract = True
@@ -101,9 +123,20 @@ class TaggedModel(NamedModel):
 class TaggedUserItem(TaggedUserModel):
     def __str__(self):
         try:
-            return f'#{super().__str__()} {self.content_object.name} <{self.content_type.app_label}:{type(self.content_object).__name__}:{self.object_id}>'
+            return '#{} {} <{}:{}:{}>'.format(
+                super().__str__(),
+                self.content_object.name,
+                self.content_type.app_label,
+                type(self.content_object).__name__,
+                self.object_id
+                )
         except AttributeError:
-            return f'#{super().__str__()} <{self.content_type.app_label}:{type(self.content_object).__name__}:{self.object_id}>'
+            return '#{} <{}:{}:{}>'.format(
+                super().__str__(),
+                self.content_type.app_label,
+                type(self.content_object).__name__,
+                self.object_id
+                )
 
 
 class Score(NamedUserModel):
@@ -142,9 +175,24 @@ class ScoredItem(TaggedModel):
 
     def __str__(self):
         try:
-            return f'{self.content_object.name} <{self.content_type.app_label}:{type(self.content_object).__name__}:{self.object_id}> {self.score.name}:{self.val} ({self.score.user.username})'
+            return '{} <{}:{}:{}> {}:{} ({})'.format(
+                self.content_object.name,
+                self.content_type.app_label,
+                type(self.content_object).__name__,
+                self.object_id,
+                self.score.name,
+                self.val,
+                self.score.user.username
+                )
         except AttributeError:
-            return f'<{self.content_type.app_label}:{type(self.content_object).__name__}:{self.object_id}> {self.score.name}:{self.val} ({self.score.user.username})'
+            return '<{}:{}:{}> {}:{} ({})'.format(
+                self.content_type.app_label,
+                type(self.content_object).__name__,
+                self.object_id,
+                self.score.name,
+                self.val,
+                self.score.user.username
+                )
 
 
 class ImageUser(TaggedUserItem):
@@ -157,4 +205,4 @@ class ImageUser(TaggedUserItem):
 
     def __str__(self):
         parent_str = super().__str__()
-        return "%s - %s" % (parent_str, self.url)
+        return f'{parent_str} - {self.url}'

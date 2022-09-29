@@ -22,9 +22,8 @@ class AsanaForm(models.Model):
         related_name='forms',
         on_delete=models.CASCADE
         )
-    variant = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0)]
+    variant = models.PositiveSmallIntegerField(
+        default=0
         )
     pict = models.ImageField(
         max_length=255,
@@ -33,11 +32,11 @@ class AsanaForm(models.Model):
         width_field='pict_width',
         help_text=_('Pictogram 100x100px')
         )
-    pict_height = models.IntegerField(
+    pict_height = models.PositiveSmallIntegerField(
         default=100,
         validators=[MinValueValidator(1)]
         )
-    pict_width = models.IntegerField(
+    pict_width = models.PositiveSmallIntegerField(
         default=100,
         validators=[MinValueValidator(1)]
         )
